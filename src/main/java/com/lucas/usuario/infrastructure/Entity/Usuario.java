@@ -47,13 +47,8 @@ public class Usuario implements UserDetails {
     }
 
     @Override
-    public @Nullable String getPassword() {
-        return senha;
-    }
+    public @Nullable String getPassword() { return getSenha(); }
 
     @Override
-    public String getUsername() {
-        return email;
-    }
-
+    public String getUsername() { return getNome(); }
 }
