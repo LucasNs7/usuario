@@ -1,6 +1,6 @@
 package com.lucas.usuario.infrastructure.security;
 
-import com.lucas.usuario.infrastructure.Entity.Usuario;
+import com.lucas.usuario.infrastructure.entity.Usuario;
 import com.lucas.usuario.infrastructure.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
