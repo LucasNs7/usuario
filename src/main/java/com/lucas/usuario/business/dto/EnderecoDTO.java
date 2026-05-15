@@ -18,7 +18,6 @@ public class EnderecoDTO {
     private String rua;
 
     @Min(value = 1, message = "Número deve ser maior que zero")
-    @Size(max = 10, message = "Número deve ter no máximo 10 digitos")
     private int numero;
 
     @Size(max = 100, message = "Complemento muito grande")
