@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -38,12 +37,12 @@ public class SecurityConfig {
         JwtRequestFilter jwtRequestFilter = new JwtRequestFilter(jwtUtil, userDetailsService);
 
         http
-                .csrf(AbstractHttpConfigurer::disable) // Desativa proteção CSRF para APIs REST (não aplicável a APIs que não mantêm estado)
+                .csrf(csrf -> csrf.disable()) // Desativa proteção CSRF para APIs REST (não aplicável a APIs que não mantêm estado)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/usuario/login").permitAll() // Permite acesso ao endpoint de login sem autenticação
+                        .requestMatchers("/user/login").permitAll() //acesso ao endpoint de login sem autenticação
                         .requestMatchers(HttpMethod.GET, "/auth").permitAll()// Permite acesso ao endpoint GET /auth sem autenticação
-                        .requestMatchers(HttpMethod.POST, "/usuario").permitAll() // Permite acesso ao endpoint POST /usuario sem autenticação
-                        .requestMatchers("/usuario/**").authenticated() // Requer autenticação para qualquer endpoint que comece com /usuario/
+                        .requestMatchers(HttpMethod.POST, "/user").permitAll() // Permite acesso ao endpoint POST /usuario sem autenticação
+                        .requestMatchers("/user/**").authenticated() // Requer autenticação para qualquer endpoint que comece com /usuario/
                         .anyRequest().authenticated() // Requer autenticação para todas as outras requisições
                 )
                 .sessionManagement(session -> session
