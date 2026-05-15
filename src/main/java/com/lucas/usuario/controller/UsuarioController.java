@@ -2,9 +2,11 @@ package com.lucas.usuario.controller;
 
 import com.lucas.usuario.business.dto.UsuarioDTO;
 import com.lucas.usuario.business.service.UsuarioService;
+import com.lucas.usuario.infrastructure.exceptions.ConflictException;
 import com.lucas.usuario.infrastructure.security.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +28,9 @@ public class UsuarioController {
         try {
             return ResponseEntity.ok(usuarioService.criaUsuario(usuarioDTO));
         } catch (Exception e) {
+            if (e instanceof ConflictException) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            }
             e.printStackTrace();
             return ResponseEntity.internalServerError().body("Erro no servidor");
         }
