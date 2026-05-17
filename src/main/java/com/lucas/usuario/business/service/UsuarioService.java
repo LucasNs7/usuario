@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,10 +23,20 @@ public class UsuarioService {
     public UsuarioDTO criaUsuario(@NonNull UsuarioDTO usuarioDTO) {
         serviceHelper.existsEmail(usuarioDTO.getEmail());
 
-        usuarioDTO.setSenha(encoder.encode(usuarioDTO.getSenha()));
-
-        Usuario usuario = usuarioConverter.paraUsuario(usuarioDTO);
+        Usuario usuario = serviceHelper.criptografaSenha(usuarioDTO);
 
         return usuarioConverter.paraUsuarioDTO(usuarioRepository.save(usuario));
+    }
+
+    @Transactional
+    public UsuarioDTO buscaUsuarioPorEmail(String email) {
+        return usuarioConverter.paraUsuarioDTO(serviceHelper.buscarPorEmail(email));
+    }
+
+    @Transactional
+    public UsuarioDTO deletaUsuarioPorEmail(String email) {
+        UsuarioDTO usuarioDto = buscaUsuarioPorEmail(email);
+        usuarioRepository.deleteByEmail(email);
+        return usuarioDto;
     }
 }
