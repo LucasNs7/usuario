@@ -1,8 +1,13 @@
 package com.lucas.usuario.business.Helper;
 
+import com.lucas.usuario.business.converter.UsuarioConverter;
+import com.lucas.usuario.business.dto.UsuarioDTO;
+import com.lucas.usuario.infrastructure.entity.Usuario;
 import com.lucas.usuario.infrastructure.exceptions.ConflictException;
+import com.lucas.usuario.infrastructure.exceptions.ResourceNotFoundException;
 import com.lucas.usuario.infrastructure.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -10,6 +15,8 @@ import org.springframework.stereotype.Component;
 public class ServiceHelper {
 
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioConverter usuarioConverter;
+    private final PasswordEncoder passwordEncoder;
 
     public void existsEmail(String email) {
         try {
@@ -23,5 +30,20 @@ public class ServiceHelper {
 
     public boolean verificaEmailExistente(String email) {
         return usuarioRepository.existsByEmail(email);
+    }
+
+    public Usuario buscarPorEmail(String email) {
+        return usuarioRepository.findByEmail(email).orElseThrow(
+                () -> new ResourceNotFoundException("Email: " + email + " não encontrado!"));
+    }
+
+    public Usuario criptografaSenha(UsuarioDTO usuarioDTO) {
+        Usuario usuario = usuarioConverter.paraUsuario(usuarioDTO);
+
+        String senhaOriginal = usuarioDTO.getSenha();
+        String hash = passwordEncoder.encode(senhaOriginal);
+        usuario.setSenha(hash);
+
+        return usuario;
     }
 }
