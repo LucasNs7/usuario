@@ -108,10 +108,8 @@ public class UsuarioConverter {
         if (usuarioDTO.getEnderecos() != null) {
             entity.getEnderecos().clear();
 
-            List<Endereco> enderecosEntidade = usuarioDTO.getEnderecos()
-                    .stream()
-                    .map(this::paraEndereco)
-                    .toList();
+            List<Endereco> enderecosEntidade =
+                    paraListaEnderecos(usuarioDTO.getEnderecos());
 
             entity.getEnderecos().addAll(enderecosEntidade);
         }
@@ -119,10 +117,8 @@ public class UsuarioConverter {
         if (usuarioDTO.getTelefones() != null) {
             entity.getTelefones().clear();
 
-            List<Telefone> telefonesEntidade = usuarioDTO.getTelefones()
-                    .stream()
-                    .map(this::paraTelefone)
-                    .toList();
+            List<Telefone> telefonesEntidade =
+                    paraListaTelefones(usuarioDTO.getTelefones());
 
             entity.getTelefones().addAll(telefonesEntidade);
         }
