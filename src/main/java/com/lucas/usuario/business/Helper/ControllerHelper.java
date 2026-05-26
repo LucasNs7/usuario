@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 public class ControllerHelper {
 
     public <T> ResponseEntity<?> tryCatchFunction(Supplier<T> action,
-                  Class<? extends Exception> exceptionClass, HttpStatus statusCode ){
+                  Class<? extends Exception> exceptionClass, HttpStatus statusCode){
         try {
             return ResponseEntity.ok(action.get());
         } catch (Exception e) {
