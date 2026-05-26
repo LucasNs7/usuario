@@ -39,4 +39,10 @@ public class UsuarioService {
         usuarioRepository.deleteByEmail(email);
         return usuarioDto;
     }
+
+    @Transactional
+    public UsuarioDTO atualizarDadosUsuario(String token, UsuarioDTO usuarioDTO) {
+        Usuario usuario = serviceHelper.atualizaDadosUsuario(token, usuarioDTO);
+        return usuarioConverter.paraUsuarioDTO(usuarioRepository.save(usuario));
+    }
 }

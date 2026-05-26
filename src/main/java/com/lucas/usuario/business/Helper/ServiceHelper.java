@@ -6,6 +6,7 @@ import com.lucas.usuario.infrastructure.entity.Usuario;
 import com.lucas.usuario.infrastructure.exceptions.ConflictException;
 import com.lucas.usuario.infrastructure.exceptions.ResourceNotFoundException;
 import com.lucas.usuario.infrastructure.repository.UsuarioRepository;
+import com.lucas.usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ public class ServiceHelper {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioConverter usuarioConverter;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public void existsEmail(String email) {
         try {
@@ -44,6 +46,16 @@ public class ServiceHelper {
         String hash = passwordEncoder.encode(senhaOriginal);
         usuario.setSenha(hash);
 
+        return usuario;
+    }
+
+    public Usuario atualizaDadosUsuario(String token, UsuarioDTO usuarioDTO) {
+        String email = jwtUtil.extractUsername(token.substring(7));
+        Usuario entity = buscarPorEmail(email);
+        Usuario usuario = usuarioConverter.usuarioAtualizado(usuarioDTO, entity);
+        if (usuarioDTO.getSenha() != null) {
+            return criptografaSenha(usuarioConverter.paraUsuarioDTO(usuario));
+        }
         return usuario;
     }
 }

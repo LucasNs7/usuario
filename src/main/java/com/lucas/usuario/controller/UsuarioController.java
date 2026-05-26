@@ -59,4 +59,14 @@ public class UsuarioController {
                 HttpStatus.NOT_FOUND
         );
     }
+
+    @PutMapping
+    public ResponseEntity<?> atualizarUsuario(@RequestBody UsuarioDTO usuarioDTO,
+                                              @RequestHeader("Authorization")  String token) {
+        return controllerHelper.tryCatchFunction(
+                () -> usuarioService.atualizarDadosUsuario(token, usuarioDTO),
+                ResourceNotFoundException.class,
+                HttpStatus.NOT_FOUND
+        );
+    }
 }

@@ -93,4 +93,40 @@ public class UsuarioConverter {
                 .ddd(telefoneDTO.getDdd())
                 .build();
     }
+
+    public Usuario usuarioAtualizado(UsuarioDTO usuarioDTO, Usuario entity) {
+        if (usuarioDTO.getNome() != null) {
+            entity.setNome(usuarioDTO.getNome());
+        }
+        if (usuarioDTO.getSenha() != null) {
+            entity.setSenha(usuarioDTO.getSenha());
+        }
+        if (usuarioDTO.getEmail() != null) {
+            entity.setEmail(usuarioDTO.getEmail());
+        }
+
+        if (usuarioDTO.getEnderecos() != null) {
+            entity.getEnderecos().clear();
+
+            List<Endereco> enderecosEntidade = usuarioDTO.getEnderecos()
+                    .stream()
+                    .map(this::paraEndereco)
+                    .toList();
+
+            entity.getEnderecos().addAll(enderecosEntidade);
+        }
+
+        if (usuarioDTO.getTelefones() != null) {
+            entity.getTelefones().clear();
+
+            List<Telefone> telefonesEntidade = usuarioDTO.getTelefones()
+                    .stream()
+                    .map(this::paraTelefone)
+                    .toList();
+
+            entity.getTelefones().addAll(telefonesEntidade);
+        }
+
+        return entity;
+    }
 }
