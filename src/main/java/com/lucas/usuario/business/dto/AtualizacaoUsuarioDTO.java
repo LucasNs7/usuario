@@ -11,9 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UsuarioDTO {
+public class AtualizacaoUsuarioDTO {
 
-    @NotBlank(message = "Nome Obrigatório!")
     @Size(min = 3, max = 150, message = "O nome deve conter entre {min} e {max} caracteres")
     @Pattern(
             regexp = "^(?!\\s*$)[A-Za-zÀ-ÖØ-öø-ÿ\\s]+$",
@@ -21,11 +20,9 @@ public class UsuarioDTO {
     )
     private String nome;
 
-    @NotBlank(message = "Email obrigatório!")
     @Email(message = "Email inválido")
     private String email;
 
-    @NotBlank(message = "Senha obrigatória!")
     @Size(min = 8, message = "Senha deve ter pelo menos 8 caracteres")
     @Pattern(
             regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).+$",
@@ -33,11 +30,9 @@ public class UsuarioDTO {
     )
     private String senha;
 
-    @NotEmpty(message = "Informe pelo menos um endereço")
     @Valid
     private List<EnderecoDTO> enderecos;
 
-    @NotEmpty(message = "Informe pelo menos um telefone")
     @Valid
     private List<TelefoneDTO> telefones;
 }

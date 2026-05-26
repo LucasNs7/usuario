@@ -1,7 +1,7 @@
 package com.lucas.usuario.controller;
 
 import com.lucas.usuario.business.Helper.ControllerHelper;
-import com.lucas.usuario.business.dto.UsuarioDTO;
+import com.lucas.usuario.business.dto.*;
 import com.lucas.usuario.business.service.UsuarioService;
 import com.lucas.usuario.infrastructure.exceptions.ConflictException;
 import com.lucas.usuario.infrastructure.exceptions.ResourceNotFoundException;
@@ -43,7 +43,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<?> buscarUsuarioPorEmail(@RequestParam("email") String email) {
+    public ResponseEntity<?> buscarUsuarioPorEmail(@RequestParam("email") @Valid String email) {
         return controllerHelper.tryCatchFunction(
                 () -> usuarioService.buscaUsuarioPorEmail(email),
                 ResourceNotFoundException.class,
@@ -52,7 +52,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deletarUsuarioPorEmail(@RequestParam("email") String email) {
+    public ResponseEntity<?> deletarUsuarioPorEmail(@RequestParam("email") @Valid String email) {
         return controllerHelper.tryCatchFunction(
                 () -> usuarioService.deletaUsuarioPorEmail(email),
                 ResourceNotFoundException.class,
@@ -61,10 +61,30 @@ public class UsuarioController {
     }
 
     @PutMapping
-    public ResponseEntity<?> atualizarUsuario(@RequestBody UsuarioDTO usuarioDTO,
-                                              @RequestHeader("Authorization")  String token) {
+    public ResponseEntity<?> atualizarUsuario(@RequestBody @Valid AtualizacaoUsuarioDTO atualizacaoUsuarioDTO,
+                                              @RequestHeader("Authorization") @Valid String token) {
         return controllerHelper.tryCatchFunction(
-                () -> usuarioService.atualizarDadosUsuario(token, usuarioDTO),
+                () -> usuarioService.atualizarDadosUsuario(token, atualizacaoUsuarioDTO),
+                ResourceNotFoundException.class,
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    @PutMapping("/address")
+    public ResponseEntity<?> atualizarEndereco(@RequestBody @Valid AtualizacaoEnderecoDTO atualizacaoEnderecoDTO,
+                                               @RequestParam("id") @Valid Long id) {
+        return controllerHelper.tryCatchFunction(
+                () -> usuarioService.atualizarEndereco(id, atualizacaoEnderecoDTO),
+                ResourceNotFoundException.class,
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    @PutMapping("/telephone")
+    public ResponseEntity<?> atualizarTelefone(@RequestBody @Valid AtualizacaoTelefoneDTO atualizacaoTelefoneDTO,
+                                               @RequestParam("id") @Valid Long id) {
+        return controllerHelper.tryCatchFunction(
+                () -> usuarioService.atualizarTelefone(id, atualizacaoTelefoneDTO),
                 ResourceNotFoundException.class,
                 HttpStatus.NOT_FOUND
         );
