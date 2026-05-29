@@ -32,7 +32,7 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioDTO buscaUsuarioPorEmail(String email) {
-        return serviceHelper.buscarPorEmail(email);
+        return serviceHelper.buscarUsuarioPorEmail(email);
     }
 
     @Transactional
@@ -53,8 +53,20 @@ public class UsuarioService {
     }
 
     @Transactional
+    public EnderecoDTO adicionarEndereco(String token, EnderecoDTO enderecoDTO) {
+        Endereco endereco = serviceHelper.adicionaEndereco(token, enderecoDTO);
+        return usuarioConverter.paraEnderecoDTO(enderecoRepository.save(endereco));
+    }
+
+    @Transactional
     public TelefoneDTO atualizarTelefone(Long telefoneId, AtualizacaoTelefoneDTO atualizacaoTelefoneDTO) {
         Telefone telefone = serviceHelper.atualizaTelefone(telefoneId, atualizacaoTelefoneDTO);
+        return usuarioConverter.paraTelefoneDTO(telefoneRepository.save(telefone));
+    }
+
+    @Transactional
+    public TelefoneDTO adicionarTelefone(String token, TelefoneDTO telefoneDTO) {
+        Telefone telefone = serviceHelper.adicionaTelefone(token, telefoneDTO);
         return usuarioConverter.paraTelefoneDTO(telefoneRepository.save(telefone));
     }
 }

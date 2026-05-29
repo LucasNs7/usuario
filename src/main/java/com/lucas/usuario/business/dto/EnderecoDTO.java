@@ -10,8 +10,6 @@ import lombok.*;
 @Builder
 public class EnderecoDTO {
 
-    @NotNull(message = "O ID do usuário é obrigatório para atualização")
-    @Positive(message = "O ID informado deve ser maior que zero")
     private Long id;
 
     @NotBlank(message = "Rua obrigatória!")

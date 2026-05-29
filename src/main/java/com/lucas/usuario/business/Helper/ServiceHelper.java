@@ -33,72 +33,78 @@ public class ServiceHelper {
     }
 
     // ==> Usuario Section
-    public Usuario buscaPorEmail(String email) {
+    public Usuario buscaUsuarioPorEmail(String email) {
         return usuarioRepository.findByEmail(email).orElseThrow(
                 () -> new ResourceNotFoundException("Usuário com e-mail: " + email + " não encontrado!")
         );
     }
 
-    public UsuarioDTO buscarPorEmail(String email) {
-        Usuario usuario = buscaPorEmail(email);
+    public UsuarioDTO buscarUsuarioPorEmail(String email) {
+        Usuario usuario = buscaUsuarioPorEmail(email);
         return usuarioConverter.paraUsuarioDTO(usuario);
     }
 
-    // TODO: Refatorar
     public Usuario criptografaSenha(UsuarioDTO usuarioDTO) {
         Usuario usuario = usuarioConverter.paraUsuario(usuarioDTO);
         String senhaOriginal = usuarioDTO.getSenha();
-        String hash = passwordEncoder.encode(senhaOriginal);
-        usuario.setSenha(hash);
+        usuario.setSenha(passwordEncoder.encode(senhaOriginal));
         return usuario;
     }
 
-    // TODO: Refatorar
     public UsuarioDTO deletarUsuarioPorEmail(String email) {
-        UsuarioDTO usuarioDTO = buscarPorEmail(email);
+        UsuarioDTO usuarioDTO = buscarUsuarioPorEmail(email);
         usuarioRepository.deleteByEmail(email);
         return usuarioDTO;
     }
 
-    // TODO: Refatorar para private
     public Usuario atualizaDadosUsuario(String token, AtualizacaoUsuarioDTO atualizacaoUsuarioDTO) {
         String email = jwtUtil.extractUsername(token.substring(7));
-        Usuario entity = buscaPorEmail(email);
+        Usuario entity = buscaUsuarioPorEmail(email);
         Usuario usuario = usuarioConverter.usuarioAtualizado(atualizacaoUsuarioDTO, entity);
         if (atualizacaoUsuarioDTO.getSenha() != null && !atualizacaoUsuarioDTO.getSenha().isBlank()) {
-            String senhaCriptografada = passwordEncoder.encode(atualizacaoUsuarioDTO.getSenha()); // Use o seu encoder aqui
+            String senhaCriptografada = passwordEncoder.encode(atualizacaoUsuarioDTO.getSenha());
             usuario.setSenha(senhaCriptografada);
         }
         return usuario;
     }
 
     // ==> Endereco Section
-    // TODO: Refatorar para EnderecoDTO
     public Endereco buscarEnderecoPorId(Long enderecoId) {
         return enderecoRepository.findById(enderecoId).orElseThrow(
                 () -> new ResourceNotFoundException("Id: " + enderecoId + " não encontrado!")
         );
     }
 
-    // TODO: Refatorar para EnderecoDTO
     public Endereco atualizaEndereco(Long enderecoId, AtualizacaoEnderecoDTO atualizacaoEnderecoDTO) {
         Endereco entity = buscarEnderecoPorId(enderecoId);
         Endereco endereco = usuarioConverter.enderecoAtualizado(atualizacaoEnderecoDTO, entity);
         return endereco;
     }
 
+    public Endereco adicionaEndereco(String token, EnderecoDTO enderecoDTO) {
+        String email = jwtUtil.extractUsername(token.substring(7));
+        Usuario usuario = buscaUsuarioPorEmail(email);
+        Endereco endereco = usuarioConverter.paraAdicionarEndereco(enderecoDTO, usuario.getId());
+        return endereco;
+    }
+
     // ==> Telefone Section
-    // TODO: Refatorar para TelefoneDTO
     public Telefone buscarTelefonePorId(Long telefoneId) {
         return telefoneRepository.findById(telefoneId).orElseThrow(
                 () -> new ResourceNotFoundException("Id: " + telefoneId + " " + "não encontrado!")
         );
     }
 
-    // TODO: Refatorar para TelefoneDTO
     public Telefone atualizaTelefone(Long telefoneId, AtualizacaoTelefoneDTO atualizacaoTelefoneDTO) {
         Telefone entity = buscarTelefonePorId(telefoneId);
         Telefone telefone = usuarioConverter.telefoneAtualizado(atualizacaoTelefoneDTO, entity);
+        return telefone;
+    }
+
+    public Telefone adicionaTelefone(String token, TelefoneDTO telefoneDTO) {
+        String email = jwtUtil.extractUsername(token.substring(7));
+        Usuario usuario = buscaUsuarioPorEmail(email);
+        Telefone telefone = usuarioConverter.paraAdicionarTelefone(telefoneDTO, usuario.getId());
         return telefone;
     }
 }
