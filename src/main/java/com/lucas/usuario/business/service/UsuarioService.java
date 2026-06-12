@@ -24,6 +24,7 @@ public class UsuarioService {
     private final UsuarioConverter usuarioConverter;
     private final ServiceHelper serviceHelper;
 
+    @Transactional
     public UsuarioDTO criaUsuario(@NonNull UsuarioDTO usuarioDTO) {
         serviceHelper.existsEmail(usuarioDTO.getEmail());
         Usuario usuario = serviceHelper.criptografaSenha(usuarioDTO);
@@ -32,12 +33,12 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioDTO buscaUsuarioPorEmail(String email) {
-        return serviceHelper.buscarPorEmail(email);
+        return usuarioConverter.paraUsuarioDTO(serviceHelper.buscaPorEmail(email));
     }
 
     @Transactional
     public UsuarioDTO deletaUsuarioPorEmail(String email) {
-        return serviceHelper.deletarUsuarioPorEmail(email);
+        return usuarioConverter.paraUsuarioDTO(serviceHelper.deletarUsuarioPorEmail(email));
     }
 
     @Transactional
