@@ -35,9 +35,9 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody UsuarioDTO usuarioDTO) {
+    public String login(@RequestBody LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(usuarioDTO.getEmail(), usuarioDTO.getSenha())
+                new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getSenha())
         );
         return "Bearer " + jwtUtil.generateToken(authentication.getName());
     }
@@ -70,11 +70,33 @@ public class UsuarioController {
         );
     }
 
+    // ==> Endereco Section
+    @PostMapping("/address")
+    public ResponseEntity<?> adicionarEndereco(@RequestBody @Valid EnderecoDTO enderecoDTO,
+                                               @RequestHeader("Authorization")  @Valid String token) {
+        return controllerHelper.tryCatchFunction(
+                () -> usuarioService.adicionarEndereco(token, enderecoDTO),
+                ResourceNotFoundException.class,
+                HttpStatus.NOT_FOUND
+        );
+    }
+
     @PutMapping("/address")
     public ResponseEntity<?> atualizarEndereco(@RequestBody @Valid AtualizacaoEnderecoDTO atualizacaoEnderecoDTO,
                                                @RequestParam("id") @Valid Long id) {
         return controllerHelper.tryCatchFunction(
                 () -> usuarioService.atualizarEndereco(id, atualizacaoEnderecoDTO),
+                ResourceNotFoundException.class,
+                HttpStatus.NOT_FOUND
+        );
+    }
+
+    // ==> Telefone Section
+    @PostMapping("/telephone")
+    public ResponseEntity<?> adicionarTelefone(@RequestBody @Valid TelefoneDTO telefoneDTO,
+                                               @RequestHeader("Authorization") @Valid String token) {
+        return controllerHelper.tryCatchFunction(
+                () -> usuarioService.adicionarTelefone(token, telefoneDTO),
                 ResourceNotFoundException.class,
                 HttpStatus.NOT_FOUND
         );
