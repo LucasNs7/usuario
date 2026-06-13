@@ -63,6 +63,10 @@ public class UsuarioService {
         );
     }
 
+    private String pegaEmail(String token){
+        return jwtUtil.extractUsername(token.substring(7));
+    }
+
     // ==> Service
     @Transactional
     public UsuarioDTO criaUsuario(@NonNull UsuarioDTO usuarioDTO) {
@@ -85,8 +89,7 @@ public class UsuarioService {
 
     @Transactional
     public UsuarioDTO atualizarDadosUsuario(String token, AtualizacaoUsuarioDTO atualizacaoUsuarioDTO) {
-        String email = jwtUtil.extractUsername(token.substring(7));
-        Usuario entity = buscaEntityPorEmail(email);
+        Usuario entity = buscaEntityPorEmail(pegaEmail(token));
         usuarioConverter.usuarioAtualizado(atualizacaoUsuarioDTO, entity);
         if (entity.getSenha() != null && !entity.getSenha().isBlank()) {
             entity.setSenha(passwordEncoder.encode(entity.getSenha()));
@@ -97,14 +100,28 @@ public class UsuarioService {
     @Transactional
     public EnderecoDTO atualizarEndereco(Long enderecoId, AtualizacaoEnderecoDTO atualizacaoEnderecoDTO) {
         Endereco entity = buscarEnderecoPorId(enderecoId);
-        Endereco endereco = usuarioConverter.enderecoAtualizado(atualizacaoEnderecoDTO, entity);
+        usuarioConverter.enderecoAtualizado(atualizacaoEnderecoDTO, entity);
+        return usuarioConverter.paraEnderecoDTO(enderecoRepository.save(entity));
+    }
+
+    @Transactional
+    public EnderecoDTO adicionarEndereco(String token, EnderecoDTO enderecoDTO) {
+        Usuario usuario = buscaEntityPorEmail(pegaEmail(token));
+        Endereco endereco = usuarioConverter.paraAdicionarEndereco(enderecoDTO, usuario.getId());
         return usuarioConverter.paraEnderecoDTO(enderecoRepository.save(endereco));
     }
 
     @Transactional
     public TelefoneDTO atualizarTelefone(Long telefoneId, AtualizacaoTelefoneDTO atualizacaoTelefoneDTO) {
         Telefone entity = buscarTelefonePorId(telefoneId);
-        Telefone telefone = usuarioConverter.telefoneAtualizado(atualizacaoTelefoneDTO, entity);
+        usuarioConverter.telefoneAtualizado(atualizacaoTelefoneDTO, entity);
+        return usuarioConverter.paraTelefoneDTO(telefoneRepository.save(entity));
+    }
+
+    @Transactional
+    public TelefoneDTO adicionarTelefone(String token, TelefoneDTO telefoneDTO) {
+        Usuario usuario = buscaEntityPorEmail(pegaEmail(token));
+        Telefone telefone = usuarioConverter.paraAdicionarTelefone(telefoneDTO, usuario.getId());
         return usuarioConverter.paraTelefoneDTO(telefoneRepository.save(telefone));
     }
 }
