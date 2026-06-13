@@ -13,6 +13,9 @@ import com.lucas.usuario.infrastructure.repository.UsuarioRepository;
 import com.lucas.usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UsuarioService {
 
-    private final UsuarioRepository usuarioRepository;
+    private final AuthenticationManager authenticationManager;
     private final EnderecoRepository enderecoRepository;
     private final TelefoneRepository telefoneRepository;
+    private final UsuarioRepository usuarioRepository;
     private final UsuarioConverter usuarioConverter;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
@@ -73,6 +77,13 @@ public class UsuarioService {
         existsEmail(usuarioDTO.getEmail());
         Usuario usuario = criptografaSenha(usuarioConverter.paraUsuario(usuarioDTO));
         return usuarioConverter.paraUsuarioDTO(usuarioRepository.save(usuario));
+    }
+
+    public String autenticarUsuario(LoginDTO loginDTO){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getSenha())
+        );
+        return "Bearer " + jwtUtil.generateToken(authentication.getName());
     }
 
     @Transactional

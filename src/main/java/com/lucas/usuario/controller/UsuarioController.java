@@ -5,14 +5,11 @@ import com.lucas.usuario.business.dto.*;
 import com.lucas.usuario.business.service.UsuarioService;
 import com.lucas.usuario.infrastructure.exceptions.ConflictException;
 import com.lucas.usuario.infrastructure.exceptions.ResourceNotFoundException;
-import com.lucas.usuario.infrastructure.security.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,8 +19,6 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
     private final ControllerHelper controllerHelper;
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
 
     @PostMapping
     public ResponseEntity<?> criarUsuario(@RequestBody @Valid UsuarioDTO usuarioDTO) {
@@ -35,11 +30,12 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginDTO loginDTO) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getSenha())
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
+        return controllerHelper.tryCatchFunction(
+                () -> usuarioService.autenticarUsuario(loginDTO),
+                AuthenticationException.class,
+                HttpStatus.UNAUTHORIZED
         );
-        return "Bearer " + jwtUtil.generateToken(authentication.getName());
     }
 
     @GetMapping
