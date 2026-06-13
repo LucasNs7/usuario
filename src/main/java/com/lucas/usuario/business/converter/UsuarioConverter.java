@@ -111,6 +111,7 @@ public class UsuarioConverter {
                 .cidade(atualizacaoEnderecoDTO.getCidade() != null ? atualizacaoEnderecoDTO.getCidade(): entity.getCidade())
                 .estado(atualizacaoEnderecoDTO.getEstado() != null ? atualizacaoEnderecoDTO.getEstado() : entity.getEstado())
                 .cep(atualizacaoEnderecoDTO.getCep() != null ? atualizacaoEnderecoDTO.getCep() : entity.getCep())
+                .usuarioId(entity.getUsuarioId())
                 .build();
     }
 
